@@ -208,7 +208,7 @@ function App() {
         </div>
 
         {/* Connection List */}
-        <div className="card-synchrony p-6  min-w-[80vw]">
+        <div className="card-synchrony p-6  min-w-[980px]">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
               {activeTab} Connections
