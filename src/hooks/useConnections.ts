@@ -10,12 +10,14 @@ export const useConnections = () => {
     const loadData = async () => {
       try {
         const savedConnections = loadConnections();
-        // Migrate old connections to include environment field
+        // Migrate old connections to include new fields
         const migratedConnections = savedConnections.map(conn => ({
           ...conn,
           environment: conn.environment || 'dev',
           createdAt: conn.createdAt || new Date().toISOString(),
           lastUsed: conn.lastUsed || new Date().toISOString(),
+          isConnected: conn.isConnected || false,
+          connectionStatus: conn.connectionStatus || 'disconnected',
         }));
         setConnections(migratedConnections);
       } catch (error) {
@@ -41,6 +43,8 @@ export const useConnections = () => {
       environment: connection.environment || 'dev',
       createdAt: connection.createdAt || new Date().toISOString(),
       lastUsed: connection.lastUsed || new Date().toISOString(),
+      isConnected: connection.isConnected || false,
+      connectionStatus: 'disconnected',
     };
     
     const newConnections = [...connections, newConnection];
@@ -49,7 +53,12 @@ export const useConnections = () => {
 
   const updateConnection = useCallback((id: string, updates: Partial<Connection>) => {
     const newConnections = connections.map(conn =>
-      conn.id === id ? { ...conn, ...updates, lastUsed: new Date().toISOString() } : conn
+      conn.id === id ? { 
+        ...conn, 
+        ...updates, 
+        lastUsed: new Date().toISOString(),
+        lastConnectionAttempt: updates.isConnected !== undefined ? new Date().toISOString() : conn.lastConnectionAttempt
+      } : conn
     );
     saveData(newConnections);
   }, [connections, saveData]);
@@ -58,6 +67,66 @@ export const useConnections = () => {
     const newConnections = connections.filter(conn => conn.id !== id);
     saveData(newConnections);
   }, [connections, saveData]);
+
+  const connectToDatabase = useCallback(async (connection: Connection) => {
+    // Update status to connecting
+    updateConnection(connection.id, { 
+      connectionStatus: 'connecting',
+      isConnected: false,
+      connectionError: undefined
+    });
+
+    try {
+      // Simulate connection attempt
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulate connection test
+      const success = await simulateConnectionTest(connection);
+      
+      if (success) {
+        updateConnection(connection.id, { 
+          isConnected: true,
+          connectionStatus: 'connected',
+          connectionError: undefined
+        });
+        return true;
+      } else {
+        updateConnection(connection.id, { 
+          isConnected: false,
+          connectionStatus: 'error',
+          connectionError: 'Failed to establish connection'
+        });
+        return false;
+      }
+    } catch (error) {
+      updateConnection(connection.id, { 
+        isConnected: false,
+        connectionStatus: 'error',
+        connectionError: error instanceof Error ? error.message : 'Connection failed'
+      });
+      return false;
+    }
+  }, [updateConnection]);
+
+  const disconnectFromDatabase = useCallback((connection: Connection) => {
+    updateConnection(connection.id, { 
+      isConnected: false,
+      connectionStatus: 'disconnected',
+      connectionError: undefined
+    });
+  }, [updateConnection]);
+
+  const simulateConnectionTest = async (connection: Connection): Promise<boolean> => {
+    // Simulate various failure scenarios
+    if (connection.host === 'invalid-host') return false;
+    if (connection.username === 'invalid-user') return false;
+    if (connection.port < 1 || connection.port > 65535) return false;
+    if (connection.databaseName === 'nonexistent') return false;
+    if (connection.host.includes('timeout')) return false;
+    
+    // Success case
+    return true;
+  };
 
   const reorderConnections = useCallback((type: DatabaseType, newOrder: Connection[]) => {
     const otherConnections = connections.filter(conn => conn.type !== type);
@@ -77,6 +146,8 @@ export const useConnections = () => {
       environment: conn.environment || 'dev',
       createdAt: conn.createdAt || new Date().toISOString(),
       lastUsed: conn.lastUsed || new Date().toISOString(),
+      isConnected: false, // Reset connection status for imported connections
+      connectionStatus: 'disconnected' as const,
     }));
     
     const newConnections = [...connections, ...processedConnections];
@@ -95,6 +166,8 @@ export const useConnections = () => {
     addConnection,
     updateConnection,
     deleteConnection,
+    connectToDatabase,
+    disconnectFromDatabase,
     reorderConnections,
     importConnections,
     getConnectionsByType,

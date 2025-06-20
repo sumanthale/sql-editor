@@ -18,7 +18,6 @@ import {
 } from "@dnd-kit/sortable";
 import { Database, Sparkles } from "lucide-react";
 
-
 export interface ConnectionListProps {
   connections: Connection[];
   type: DatabaseType;
@@ -26,7 +25,10 @@ export interface ConnectionListProps {
   onEdit: (connection: Connection) => void;
   onReorder: (type: DatabaseType, newOrder: Connection[]) => void;
   onUpdatePassword: (connection: Connection) => void;
+  onConnect: (connection: Connection) => void;
+  onDisconnect: (connection: Connection) => void;
 }
+
 export const ConnectionList: React.FC<ConnectionListProps> = ({
   connections,
   type,
@@ -34,6 +36,8 @@ export const ConnectionList: React.FC<ConnectionListProps> = ({
   onEdit,
   onUpdatePassword,
   onReorder,
+  onConnect,
+  onDisconnect,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -74,8 +78,8 @@ export const ConnectionList: React.FC<ConnectionListProps> = ({
           No {type} connections yet
         </h3>
         <p className="text-gray-500 max-w-lg mx-auto leading-relaxed">
-          Create your first {type} connection to start managing your databases
-     
+          Create your first {type} connection to start managing your databases.
+          Test each connection to ensure it's working properly.
         </p>
       </div>
     );
@@ -96,6 +100,8 @@ export const ConnectionList: React.FC<ConnectionListProps> = ({
               onDelete={onDelete}
               onEdit={onEdit}
               onUpdatePassword={onUpdatePassword}
+              onConnect={onConnect}
+              onDisconnect={onDisconnect}
             />
           ))}
         </div>

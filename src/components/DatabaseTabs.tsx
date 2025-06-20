@@ -46,12 +46,12 @@ export const DatabaseTabs: React.FC<DatabaseTabsProps> = ({
                 : 'text-theme-secondary hover:bg-theme-tertiary hover:text-theme-primary'}
             `}
           >
-            <Icon className={`w-3 h-3 ${isActive ? 'text-charcoal' : tabConfig[type].color}`} />
+            <Icon className={`w-4 h-4 ${isActive ? 'text-charcoal' : tabConfig[type].color}`} />
             <span className="truncate">{type}</span>
             {count > 0 && (
               <span
                 className={`
-                   w-3 h-3 text-[9px] font-bold rounded-full flex items-center justify-center
+                   w-4 h-4 text-[10px] font-bold rounded-full flex items-center justify-center
                   ${isActive
                     ? 'bg-charcoal text-synchrony-gold'
                     : 'bg-theme-accent text-synchrony-gold border border-synchrony-gold'}

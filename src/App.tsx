@@ -17,6 +17,8 @@ import {
   Sparkles,
   Sun,
   Moon,
+  MousePointer,
+  Grip,
 } from "lucide-react";
 import Editor from "./editor/Editor";
 
@@ -28,6 +30,8 @@ function App() {
     addConnection,
     updateConnection,
     deleteConnection,
+    connectToDatabase,
+    disconnectFromDatabase,
     reorderConnections,
     importConnections: handleImportConnections,
     getConnectionsByType,
@@ -103,6 +107,19 @@ function App() {
     updateConnection(connectionId, { password: newPassword });
     setIsPasswordModalOpen(false);
     setUpdatingPasswordConnection(null);
+  };
+
+  const handleConnect = async (connection: Connection) => {
+    const success = await connectToDatabase(connection);
+    if (!success) {
+      alert(
+        "Failed to connect to the database. Please check your connection settings."
+      );
+    }
+  };
+
+  const handleDisconnect = (connection: Connection) => {
+    disconnectFromDatabase(connection);
   };
 
   if (loading) {
@@ -208,19 +225,30 @@ function App() {
         </div>
 
         {/* Connection List */}
-        <div className="card-synchrony p-6  min-w-[980px]">
-          <div className="flex items-center justify-between mb-6">
+        <div className="card-synchrony p-6 min-w-[980px]">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-4 mb-6">
+            {/* Heading with count */}
             <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
               {activeTab} Connections
               <span className="px-2 py-0.5 bg-theme-accent text-synchrony-gold text-xs font-semibold rounded-full border border-synchrony-gold">
                 {currentConnections.length}
               </span>
             </h2>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-theme-muted">
-              <Sparkles className="w-3 h-3 text-synchrony-gold" />
-              <span className="text-black dark:text-white">
-                Drag to reorder
-              </span>
+
+            {/* Interaction tips (Drag, Click) */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-theme-muted">
+              <div className="flex items-center gap-1">
+                <Grip className="w-3 h-3 text-synchrony-gold" />
+                <span className="text-black dark:text-white">
+                  Drag to reorder
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <MousePointer className="w-3 h-3 text-synchrony-gold" />
+                <span className="text-black dark:text-white">
+                  Click to connect
+                </span>
+              </div>
             </div>
           </div>
 
@@ -231,6 +259,8 @@ function App() {
             onEdit={handleEditConnection}
             onUpdatePassword={handleUpdatePassword}
             onReorder={reorderConnections}
+            onConnect={handleConnect}
+            onDisconnect={handleDisconnect}
           />
         </div>
       </div>

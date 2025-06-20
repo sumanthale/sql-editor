@@ -11,6 +11,10 @@ export interface Connection {
   order: number;
   createdAt?: string;
   lastUsed?: string;
+  isConnected?: boolean;
+  connectionStatus?: 'connected' | 'disconnected' | 'connecting' | 'error';
+  lastConnectionAttempt?: string;
+  connectionError?: string;
 }
 
 export type DatabaseType = 'PostgreSQL' | 'MySQL' | 'Oracle';
