@@ -106,7 +106,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-theme-primary truncate">
+              <h3 className="text-sm font-semibold text-black truncate">
                 {connection.connectionName}
               </h3>
             </div>
@@ -147,12 +147,12 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
 
         {/* Connection Info */}
         <div className="space-y-3 text-sm">
-          <div className="flex items-center gap-2 text-theme-secondary">
+          <div className="flex items-center gap-2 text-gray-800">
             <User className="w-4 h-4 text-theme-muted" />
             <span className="truncate font-medium">{connection.username}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-theme-secondary">
+          <div className="flex items-center gap-2 text-gray-800">
             <Network className="w-4 h-4 text-theme-muted" />
             <span className="truncate">
               {connection.host}:{connection.port}
@@ -160,7 +160,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
           </div>
 
           {connection.databaseName && (
-            <div className="flex items-center gap-2 text-theme-secondary">
+            <div className="flex items-center gap-2 text-gray-800">
               <Database className="w-4 h-4 text-theme-muted" />
               <span className="truncate">{connection.databaseName}</span>
             </div>
