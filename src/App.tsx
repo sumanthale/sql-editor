@@ -8,6 +8,7 @@ import { EditConnectionModal } from "./components/EditConnectionModal";
 import { PasswordUpdateModal } from "./components/PasswordUpdateModal";
 import { DatabaseMigration } from "./components/DatabaseMigration";
 import { exportConnections, importConnections } from "./utils/importExport";
+import { useTheme } from "./editor/hooks/useTheme";
 import {
   Plus,
   Download,
@@ -17,10 +18,13 @@ import {
   Shield,
   GitBranch,
   Code,
+  Sun,
+  Moon,
 } from "lucide-react";
 import Editor from "./editor/Editor";
 
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const {
     connections,
     loading,
@@ -106,20 +110,20 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-theme-primary flex items-center justify-center">
+        <div className="text-center animate-fade-in">
           <div className="relative">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-2xl">
-              <Database className="w-10 h-10 text-white animate-pulse" />
+            <div className="w-20 h-20 gradient-synchrony rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-theme-heavy">
+              <Database className="w-10 h-10 text-charcoal animate-pulse" />
             </div>
             <div className="absolute -top-2 -right-2">
-              <Sparkles className="w-6 h-6 text-yellow-400 animate-bounce" />
+              <Sparkles className="w-6 h-6 text-synchrony-gold animate-bounce" />
             </div>
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <h3 className="text-xl font-bold text-theme-primary mb-2">
             Loading Connections
           </h3>
-          <p className="text-gray-600">
+          <p className="text-theme-secondary">
             Preparing your premium database interface...
           </p>
         </div>
@@ -137,22 +141,22 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-theme-primary transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8 ">
+        <div className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-2xl shadow-lg">
-                  <Database className="w-8 h-8 text-white" />
+                <div className="gradient-synchrony p-3 rounded-2xl shadow-theme-medium">
+                  <Database className="w-8 h-8 text-charcoal" />
                 </div>
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold text-theme-primary">
                   Universal SQL Editor
                 </h1>
-                <p className="text-gray-600 mt-1 flex items-center space-x-2">
-                  <Shield className="w-4 h-4" />
+                <p className="text-theme-secondary mt-1 flex items-center space-x-2">
+                  <Shield className="w-4 h-4 text-dark-green" />
                   <span>
                     Seamlessly Connect, Manage and Scale Across Multiple
                     Databases
@@ -160,12 +164,26 @@ function App() {
                 </p>
               </div>
             </div>
+            
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-3 rounded-xl bg-theme-secondary hover:bg-theme-tertiary transition-synchrony shadow-theme-light"
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+            >
+              {theme === 'light' ? (
+                <Moon className="w-5 h-5 text-theme-primary" />
+              ) : (
+                <Sun className="w-5 h-5 text-synchrony-gold" />
+              )}
+            </button>
           </div>
         </div>
-        <div className="flex gap-3 mb-6 absolute top-3 right-3">
+
+        <div className="flex gap-3 mb-6 absolute top-3 right-16">
           <button
             onClick={() => setActiveView("editor")}
-            className="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 bg-purple-600 text-white shadow hover:bg-purple-700"
+            className="btn-synchrony-secondary flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-synchrony"
           >
             <Code className="w-4 h-4" />
             <span>SQL Editor</span>
@@ -173,7 +191,7 @@ function App() {
 
           <button
             onClick={() => setActiveView("migration")}
-            className="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 bg-indigo-600 text-white shadow hover:bg-indigo-700"
+            className="btn-synchrony-primary flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-synchrony"
           >
             <GitBranch className="w-4 h-4" />
             <span>Migration</span>
@@ -184,7 +202,7 @@ function App() {
         <div className="flex flex-wrap gap-3 mb-6 justify-end absolute right-5 top-20">
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="inline-flex items-center gap-2 bg-yellow-500 text-white text-sm px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors duration-150 font-medium shadow-sm"
+            className="btn-synchrony-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-synchrony font-medium shadow-theme-light"
           >
             <Plus className="w-4 h-4" />
             <span>Add Connection</span>
@@ -193,7 +211,7 @@ function App() {
           <button
             onClick={handleExport}
             disabled={connections.length === 0}
-            className="inline-flex items-center gap-2 bg-green-600 text-white text-sm px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-150 font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 bg-dark-green text-white text-sm px-4 py-2 rounded-lg hover:bg-opacity-90 transition-synchrony font-medium shadow-theme-light disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" />
             <span>Export</span>
@@ -201,7 +219,7 @@ function App() {
 
           <button
             onClick={handleImport}
-            className="inline-flex items-center gap-2 bg-gray-700 text-white text-sm px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-150 font-medium shadow-sm"
+            className="inline-flex items-center gap-2 bg-charcoal text-white text-sm px-4 py-2 rounded-lg hover:bg-opacity-90 transition-synchrony font-medium shadow-theme-light"
           >
             <Upload className="w-4 h-4" />
             <span>Import</span>
@@ -218,23 +236,23 @@ function App() {
         </div>
 
         {/* Connection List */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
+        <div className="card-synchrony p-8">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
+              <h2 className="text-2xl font-bold text-theme-primary flex items-center space-x-2">
                 <span>{activeTab} Connections</span>
-                <div className="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-sm font-semibold rounded-full">
+                <div className="px-3 py-1 bg-theme-accent text-synchrony-gold text-sm font-semibold rounded-full border border-synchrony-gold">
                   {currentConnections.length}
                 </div>
               </h2>
-              <p className="text-gray-600 mt-1">
+              <p className="text-theme-secondary mt-1">
                 Manage your {activeTab.toLowerCase()} database connections
                 across all environments
               </p>
             </div>
 
-            <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-500">
-              <Sparkles className="w-4 h-4" />
+            <div className="hidden sm:flex items-center space-x-2 text-sm text-theme-muted">
+              <Sparkles className="w-4 h-4 text-synchrony-gold" />
               <span>Drag to reorder</span>
             </div>
           </div>

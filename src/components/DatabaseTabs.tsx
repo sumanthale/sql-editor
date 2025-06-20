@@ -11,12 +11,15 @@ interface DatabaseTabsProps {
 const tabConfig = {
   PostgreSQL: {
     icon: Database,
+    color: 'text-teal',
   },
   MySQL: {
     icon: Server,
+    color: 'text-autumn',
   },
   Oracle: {
     icon: Layers,
+    color: 'text-brick',
   },
 };
 
@@ -26,7 +29,7 @@ export const DatabaseTabs: React.FC<DatabaseTabsProps> = ({
   connectionCounts,
 }) => {
   return (
-    <div className="flex space-x-1 p-1 bg-gray-100 rounded-lg shadow-inner">
+    <div className="flex space-x-1 p-1 bg-theme-secondary rounded-xl shadow-theme-light">
       {(Object.keys(tabConfig) as DatabaseType[]).map((type) => {
         const Icon = tabConfig[type].icon;
         const isActive = activeTab === type;
@@ -37,19 +40,21 @@ export const DatabaseTabs: React.FC<DatabaseTabsProps> = ({
             key={type}
             onClick={() => onTabChange(type)}
             className={`
-              flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium text-sm transition-all duration-200 min-w-0 flex-1
+              flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium text-sm transition-synchrony min-w-0 flex-1
               ${isActive
-                ? 'bg-indigo-600 text-white shadow'
-                : 'text-gray-700 hover:bg-gray-200'}
+                ? 'bg-synchrony-gold text-charcoal shadow-theme-medium transform scale-105'
+                : 'text-theme-secondary hover:bg-theme-tertiary hover:text-theme-primary'}
             `}
           >
-            <Icon className="w-4 h-4 flex-shrink-0" />
+            <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-charcoal' : tabConfig[type].color}`} />
             <span className="truncate">{type}</span>
             {count > 0 && (
               <span
                 className={`
                   inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full
-                  ${isActive ? 'bg-white/20 text-white' : 'bg-gray-300 text-gray-700'}
+                  ${isActive 
+                    ? 'bg-charcoal text-synchrony-gold' 
+                    : 'bg-theme-accent text-synchrony-gold border border-synchrony-gold'}
                 `}
               >
                 {count}

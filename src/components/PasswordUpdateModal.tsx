@@ -18,6 +18,20 @@ interface PasswordUpdateModalProps {
   onUpdate: (connectionId: string, newPassword: string) => void;
 }
 
+const databaseTypeConfig = {
+  PostgreSQL: { icon: '🐘', color: 'text-teal' },
+  MySQL: { icon: '🐬', color: 'text-autumn' },
+  Oracle: { icon: '🔶', color: 'text-brick' },
+};
+
+const environmentConfig = {
+  dev: { icon: '🔧', name: 'Development' },
+  qa: { icon: '🧪', name: 'QA' },
+  staging: { icon: '🎭', name: 'Staging' },
+  uat: { icon: '👥', name: 'UAT' },
+  prod: { icon: '🚀', name: 'Production' },
+};
+
 export const PasswordUpdateModal: React.FC<PasswordUpdateModalProps> = ({
   isOpen,
   connection,
@@ -25,11 +39,6 @@ export const PasswordUpdateModal: React.FC<PasswordUpdateModalProps> = ({
   onUpdate,
 }) => {
   const [formData, setFormData] = useState({
-    type: "PostgreSQL" as DatabaseType,
-    host: "",
-    port: 5432,
-    databaseName: "",
-    username: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -48,15 +57,12 @@ export const PasswordUpdateModal: React.FC<PasswordUpdateModalProps> = ({
   useEffect(() => {
     if (connection) {
       setFormData({
-        type: connection.type,
-        host: connection.host,
-        port: connection.port,
-        databaseName: connection.databaseName,
-        username: connection.username,
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
+      setErrors({});
+      setUpdateResult(null);
     }
   }, [connection]);
 
@@ -90,11 +96,6 @@ export const PasswordUpdateModal: React.FC<PasswordUpdateModalProps> = ({
 
   const handleClose = () => {
     setFormData({
-      type: "PostgreSQL",
-      host: "",
-      port: 5432,
-      databaseName: "",
-      username: "",
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
@@ -111,27 +112,36 @@ export const PasswordUpdateModal: React.FC<PasswordUpdateModalProps> = ({
 
   if (!isOpen || !connection) return null;
 
-  const renderPasswordInput = (label: string, value: string, onChange: (val: string) => void, error: string | undefined, field: "current" | "new" | "confirm") => (
-    <div className="space-y-1">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+  const dbConfig = databaseTypeConfig[connection.type];
+  const envConfig = environmentConfig[connection.environment];
+
+  const renderPasswordInput = (
+    label: string, 
+    value: string, 
+    onChange: (val: string) => void, 
+    error: string | undefined, 
+    field: "current" | "new" | "confirm"
+  ) => (
+    <div>
+      <label className="text-xs font-medium text-theme-primary mb-1 block">{label}</label>
       <div className="relative">
         <input
           type={showPasswords[field] ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={label}
-          className={`w-full px-3 py-2 pr-10 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${error ? "border-red-300 bg-red-50" : "border-gray-300"}`}
+          className={`input-synchrony w-full px-3 py-2 pr-10 text-sm ${error ? "border-brick" : ""}`}
         />
         <button
           type="button"
           onClick={() => toggleVisibility(field)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted hover:text-theme-primary transition-synchrony"
         >
           {showPasswords[field] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
       </div>
       {error && (
-        <p className="text-xs text-red-600 flex items-center gap-1">
+        <p className="text-xs text-brick mt-1 flex items-center gap-1">
           <AlertCircle className="w-3 h-3" /> {error}
         </p>
       )}
@@ -139,58 +149,98 @@ export const PasswordUpdateModal: React.FC<PasswordUpdateModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+    <div className="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+      <div className="card-synchrony w-full max-w-sm overflow-hidden border-0 shadow-theme-heavy">
+        {/* Compact Header */}
+        <div className="gradient-synchrony px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Key className="w-5 h-5" />
-            <div>
-              <h2 className="font-semibold">Update Password</h2>
-              <p className="text-xs opacity-80">{connection.connectionName}</p>
-            </div>
+            <Key className="w-4 h-4 text-charcoal" />
+            <h2 className="text-lg font-bold text-charcoal">Update Password</h2>
           </div>
-          <button onClick={handleClose} className="hover:bg-white/10 rounded p-1">
+          <button 
+            onClick={handleClose} 
+            className="text-charcoal hover:text-opacity-80 p-1 rounded transition-synchrony"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div className="text-xs text-gray-500 grid grid-cols-2 gap-2">
-            <div><span className="font-medium">Type:</span> {formData.type}</div>
-            <div><span className="font-medium">Host:</span> {formData.host}</div>
-            <div><span className="font-medium">Port:</span> {formData.port}</div>
-            <div><span className="font-medium">DB:</span> {formData.databaseName}</div>
-            <div className="col-span-2"><span className="font-medium">User:</span> {formData.username}</div>
+          {/* Connection Info */}
+          <div className="bg-theme-secondary rounded-lg p-3 text-xs">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">{dbConfig.icon}</span>
+              <span className="font-semibold text-theme-primary">{connection.connectionName}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-theme-secondary">
+              <div><span className="font-medium">Type:</span> {connection.type}</div>
+              <div><span className="font-medium">Env:</span> {envConfig.icon} {envConfig.name}</div>
+              <div><span className="font-medium">Host:</span> {connection.host}</div>
+              <div><span className="font-medium">Port:</span> {connection.port}</div>
+              <div className="col-span-2"><span className="font-medium">User:</span> {connection.username}</div>
+            </div>
           </div>
 
+          {/* Password Fields */}
           <div className="space-y-3">
-            {renderPasswordInput("Current Password", formData.currentPassword, (val) => setFormData((p) => ({ ...p, currentPassword: val })), errors.currentPassword, "current")}
-            {renderPasswordInput("New Password", formData.newPassword, (val) => setFormData((p) => ({ ...p, newPassword: val })), errors.newPassword, "new")}
-            {renderPasswordInput("Confirm Password", formData.confirmPassword, (val) => setFormData((p) => ({ ...p, confirmPassword: val })), errors.confirmPassword, "confirm")}
+            {renderPasswordInput(
+              "Current Password", 
+              formData.currentPassword, 
+              (val) => setFormData((p) => ({ ...p, currentPassword: val })), 
+              errors.currentPassword, 
+              "current"
+            )}
+            {renderPasswordInput(
+              "New Password", 
+              formData.newPassword, 
+              (val) => setFormData((p) => ({ ...p, newPassword: val })), 
+              errors.newPassword, 
+              "new"
+            )}
+            {renderPasswordInput(
+              "Confirm Password", 
+              formData.confirmPassword, 
+              (val) => setFormData((p) => ({ ...p, confirmPassword: val })), 
+              errors.confirmPassword, 
+              "confirm"
+            )}
           </div>
 
+          {/* Update Result */}
           {updateResult && (
-            <div className={`text-sm px-3 py-2 rounded-md flex items-center gap-2 ${updateResult === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+            <div className={`text-sm px-3 py-2 rounded-lg flex items-center gap-2 ${
+              updateResult === "success" 
+                ? "bg-dark-green bg-opacity-10 text-dark-green" 
+                : "bg-brick bg-opacity-10 text-brick"
+            }`}>
               {updateResult === "success" ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-              <span>{updateResult === "success" ? "Password updated successfully." : "Password update failed."}</span>
+              <span className="font-medium">
+                {updateResult === "success" ? "Password updated successfully." : "Password update failed."}
+              </span>
             </div>
           )}
 
+          {/* Action Buttons */}
           <div className="flex gap-2 pt-2">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 text-sm py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-md"
+              className="btn-synchrony-secondary flex-1 py-2 px-3 rounded-lg transition-synchrony font-medium text-sm"
               disabled={isUpdating}
-            >Cancel</button>
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               disabled={isUpdating || updateResult === "success"}
-              className="flex-1 text-sm py-2 px-4 text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center justify-center gap-2 disabled:opacity-50"
+              className="btn-synchrony-primary flex-1 py-2 px-3 rounded-lg transition-synchrony font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {isUpdating ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Key className="w-4 h-4" />}
-              {isUpdating ? "Updating..." : "Change Password"}
+              {isUpdating ? (
+                <div className="spinner-synchrony w-3 h-3" />
+              ) : (
+                <Key className="w-3 h-3" />
+              )}
+              {isUpdating ? "Updating..." : "Update"}
             </button>
           </div>
         </form>

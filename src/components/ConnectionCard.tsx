@@ -1,4 +1,3 @@
-// unchanged imports
 import React, { useState } from "react";
 import { Connection } from "../types/Connection";
 import {
@@ -23,34 +22,45 @@ interface ConnectionCardProps {
 const environmentConfig = {
   dev: {
     icon: "🔧",
-    badge: "bg-green-600",
-    border: "border-green-200",
-    bg: "bg-green-50",
+    badge: "badge-dev",
+    border: "border-dark-green",
+    bg: "bg-theme-accent",
+    name: "Development"
   },
   qa: {
     icon: "🧪",
-    badge: "bg-blue-600",
-    border: "border-blue-200",
-    bg: "bg-blue-50",
+    badge: "badge-qa",
+    border: "border-teal",
+    bg: "bg-theme-accent",
+    name: "QA"
   },
   staging: {
     icon: "🎭",
-    badge: "bg-yellow-600",
-    border: "border-yellow-200",
-    bg: "bg-yellow-50",
+    badge: "badge-staging",
+    border: "border-autumn",
+    bg: "bg-theme-accent",
+    name: "Staging"
   },
   uat: {
     icon: "👥",
-    badge: "bg-purple-600",
-    border: "border-purple-200",
-    bg: "bg-purple-50",
+    badge: "badge-uat",
+    border: "border-turquoise",
+    bg: "bg-theme-accent",
+    name: "UAT"
   },
   prod: {
     icon: "🚀",
-    badge: "bg-red-600",
-    border: "border-red-200",
-    bg: "bg-red-50",
+    badge: "badge-prod",
+    border: "border-brick",
+    bg: "bg-theme-accent",
+    name: "Production"
   },
+};
+
+const databaseTypeConfig = {
+  PostgreSQL: "db-postgresql",
+  MySQL: "db-mysql",
+  Oracle: "db-oracle",
 };
 
 export const ConnectionCard: React.FC<ConnectionCardProps> = ({
@@ -88,20 +98,25 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
         ref={setNodeRef}
         style={style}
         className={`
-          group relative rounded-xl border ${envConfig.border} ${envConfig.bg}
-          shadow-sm hover:shadow-md transition-all duration-200 p-4
-          ${isDragging ? "opacity-60 scale-[1.02]" : "hover:scale-[1.01]"}
+          group relative card-synchrony p-5 transition-synchrony
+          ${isDragging ? "opacity-60 scale-105 shadow-theme-heavy" : "hover:shadow-theme-medium hover:scale-[1.02]"}
+          ${envConfig.bg} border-l-4 ${envConfig.border}
         `}
       >
         {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className={`p-2 rounded-md ${envConfig.badge}`}>
-              <Database className="w-4 h-4 text-white" />
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="gradient-synchrony p-2 rounded-lg shadow-theme-light">
+              <Database className="w-4 h-4 text-charcoal" />
             </div>
-            <h3 className="text-sm font-semibold text-gray-900 truncate">
-              {connection.connectionName}
-            </h3>
+            <div>
+              <h3 className="text-sm font-semibold text-theme-primary truncate">
+                {connection.connectionName}
+              </h3>
+              <span className={`text-xs font-medium ${databaseTypeConfig[connection.type]}`}>
+                {connection.type}
+              </span>
+            </div>
           </div>
 
           {/* Actions */}
@@ -109,28 +124,28 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
             <div
               {...attributes}
               {...listeners}
-              className="p-1 rounded cursor-grab active:cursor-grabbing bg-white hover:bg-gray-100 border border-gray-200"
+              className="p-1.5 rounded-lg cursor-grab active:cursor-grabbing bg-theme-secondary hover:bg-theme-tertiary border border-theme-light transition-synchrony"
               title="Drag to reorder"
             >
-              <Grip className="w-4 h-4 text-gray-500" />
+              <Grip className="w-4 h-4 text-theme-muted" />
             </div>
             <button
               onClick={() => onUpdatePassword(connection)}
-              className="p-1 rounded hover:bg-green-100 text-green-600"
+              className="p-1.5 rounded-lg hover:bg-dark-green hover:bg-opacity-10 text-dark-green transition-synchrony"
               title="Update password"
             >
               <Key className="w-4 h-4" />
             </button>
             <button
               onClick={() => onEdit(connection)}
-              className="p-1 rounded hover:bg-blue-100 text-blue-600"
+              className="p-1.5 rounded-lg hover:bg-teal hover:bg-opacity-10 text-teal transition-synchrony"
               title="Edit connection"
             >
               <Edit3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowConfirmModal(true)}
-              className="p-1 rounded hover:bg-red-100 text-red-600"
+              className="p-1.5 rounded-lg hover:bg-brick hover:bg-opacity-10 text-brick transition-synchrony"
               title="Delete connection"
             >
               <Trash2 className="w-4 h-4" />
@@ -138,63 +153,69 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
           </div>
         </div>
 
-        {/* Info */}
-        <div className="space-y-2 text-sm text-gray-800">
-          <div className="flex items-center gap-2">
-            <Network className="w-4 h-4 text-gray-400" />
-            <span className="truncate">{connection.username}</span>
+        {/* Connection Info */}
+        <div className="space-y-3 text-sm">
+          <div className="flex items-center gap-2 text-theme-secondary">
+            <User className="w-4 h-4 text-theme-muted" />
+            <span className="truncate font-medium">{connection.username}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-2 text-theme-secondary">
+            <Network className="w-4 h-4 text-theme-muted" />
             <span className="truncate">
               {connection.host}:{connection.port}
             </span>
           </div>
+          {connection.databaseName && (
+            <div className="flex items-center gap-2 text-theme-secondary">
+              <Database className="w-4 h-4 text-theme-muted" />
+              <span className="truncate">{connection.databaseName}</span>
+            </div>
+          )}
         </div>
 
-        {/* Tags */}
-        <div className={`mt-3 pt-2 border-t ${envConfig.border} flex gap-3`}>
-          <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white ${envConfig.badge}`}
-          >
-            {connection.type}
-          </span>
-          <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white ${envConfig.badge}`}
-          >
-            {envConfig.icon}
-            <span className="ml-1 uppercase">{connection.environment}</span>
+        {/* Environment Badge */}
+        <div className="mt-4 pt-3 border-t border-theme-light">
+          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white ${envConfig.badge}`}>
+            <span className="mr-1">{envConfig.icon}</span>
+            {envConfig.name}
           </span>
         </div>
+
+        {/* Last Used */}
+        {connection.lastUsed && (
+          <div className="mt-2 text-xs text-theme-muted">
+            Last used: {new Date(connection.lastUsed).toLocaleDateString()}
+          </div>
+        )}
       </div>
 
       {/* Confirm Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 relative animate-fade-in">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="bg-red-100 p-2 rounded-full">
-                <Trash2 className="w-5 h-5 text-red-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop px-4">
+          <div className="card-synchrony max-w-sm w-full p-6 relative animate-fade-in">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-brick bg-opacity-10 p-2 rounded-full">
+                <Trash2 className="w-5 h-5 text-brick" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-theme-primary">
                 Confirm Deletion
               </h2>
             </div>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-theme-secondary mb-6">
               Are you sure you want to delete{" "}
-              <strong className="text-gray-800">{connection.connectionName}</strong>?<br />
+              <strong className="text-theme-primary">{connection.connectionName}</strong>?<br />
               This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-sm text-gray-700"
+                className="btn-synchrony-secondary px-4 py-2 rounded-lg text-sm transition-synchrony"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirmed}
-                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-sm text-white"
+                className="px-4 py-2 rounded-lg bg-brick hover:bg-opacity-90 text-white text-sm font-medium transition-synchrony"
               >
                 Delete
               </button>
