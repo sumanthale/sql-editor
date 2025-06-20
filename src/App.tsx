@@ -15,9 +15,6 @@ import {
   Upload,
   Database,
   Sparkles,
-  Shield,
-  GitBranch,
-  Code,
   Sun,
   Moon,
 } from "lucide-react";
@@ -141,37 +138,58 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-theme-primary transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="gradient-synchrony p-3 rounded-2xl shadow-theme-medium">
-                  <Database className="w-8 h-8 text-charcoal" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-theme-primary">
-                  Universal SQL Editor
-                </h1>
-                <p className="text-theme-secondary mt-1 flex items-center space-x-2">
-                  <Shield className="w-4 h-4 text-dark-green" />
-                  <span>
-                    Seamlessly Connect, Manage and Scale Across Multiple
-                    Databases
-                  </span>
-                </p>
-              </div>
+    <div className="min-h-screen bg-theme-primary transition-colors duration-300 grid place-items-center">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex items-end justify-between mb-6 flex-wrap gap-4 sm:gap-8">
+          <div className="flex flex-col items-start justify-center">
+            <img
+              src="https://www.synchrony.com/syc/img/2023_synchrony_basic_logo.svg"
+              alt="Synchrony Logo"
+              className="h-6"
+            />
+            <div>
+              <h1 className="text-3xl font-bold text-theme-primary">
+                Universal SQL Editor
+              </h1>
+              <p className="text-sm text-theme-secondary capitalize">
+                Seamlessly connect, manage and scale across multiple databases
+              </p>
             </div>
-            
-            {/* Theme Toggle */}
+          </div>
+
+          {/* Right Side: Action Buttons */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="btn-synchrony-primary flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-md"
+            >
+              <Plus className="w-3 h-3" />
+              Add New Connection
+            </button>
+
+            <button
+              onClick={handleExport}
+              disabled={connections.length === 0}
+              className="bg-dark-green text-white flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-md hover:bg-opacity-90 disabled:opacity-50"
+            >
+              <Download className="w-3 h-3" />
+              Export
+            </button>
+
+            <button
+              onClick={handleImport}
+              className="bg-charcoal text-white flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-md hover:bg-opacity-90"
+            >
+              <Upload className="w-3 h-3" />
+              Import
+            </button>
+
             <button
               onClick={toggleTheme}
-              className="p-3 rounded-xl bg-theme-secondary hover:bg-theme-tertiary transition-synchrony shadow-theme-light"
-              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+              className="p-2 rounded-md bg-theme-secondary hover:bg-theme-tertiary"
+              title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
             >
-              {theme === 'light' ? (
+              {theme === "light" ? (
                 <Moon className="w-5 h-5 text-theme-primary" />
               ) : (
                 <Sun className="w-5 h-5 text-synchrony-gold" />
@@ -180,54 +198,8 @@ function App() {
           </div>
         </div>
 
-        <div className="flex gap-3 mb-6 absolute top-3 right-16">
-          <button
-            onClick={() => setActiveView("editor")}
-            className="btn-synchrony-secondary flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-synchrony"
-          >
-            <Code className="w-4 h-4" />
-            <span>SQL Editor</span>
-          </button>
-
-          <button
-            onClick={() => setActiveView("migration")}
-            className="btn-synchrony-primary flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-synchrony"
-          >
-            <GitBranch className="w-4 h-4" />
-            <span>Migration</span>
-          </button>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-3 mb-6 justify-end absolute right-5 top-20">
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="btn-synchrony-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-synchrony font-medium shadow-theme-light"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Connection</span>
-          </button>
-
-          <button
-            onClick={handleExport}
-            disabled={connections.length === 0}
-            className="inline-flex items-center gap-2 bg-dark-green text-white text-sm px-4 py-2 rounded-lg hover:bg-opacity-90 transition-synchrony font-medium shadow-theme-light disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="w-4 h-4" />
-            <span>Export</span>
-          </button>
-
-          <button
-            onClick={handleImport}
-            className="inline-flex items-center gap-2 bg-charcoal text-white text-sm px-4 py-2 rounded-lg hover:bg-opacity-90 transition-synchrony font-medium shadow-theme-light"
-          >
-            <Upload className="w-4 h-4" />
-            <span>Import</span>
-          </button>
-        </div>
-
         {/* Database Tabs */}
-        <div className="mb-8">
+        <div className="mb-6">
           <DatabaseTabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
@@ -236,24 +208,19 @@ function App() {
         </div>
 
         {/* Connection List */}
-        <div className="card-synchrony p-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-theme-primary flex items-center space-x-2">
-                <span>{activeTab} Connections</span>
-                <div className="px-3 py-1 bg-theme-accent text-synchrony-gold text-sm font-semibold rounded-full border border-synchrony-gold">
-                  {currentConnections.length}
-                </div>
-              </h2>
-              <p className="text-theme-secondary mt-1">
-                Manage your {activeTab.toLowerCase()} database connections
-                across all environments
-              </p>
-            </div>
-
-            <div className="hidden sm:flex items-center space-x-2 text-sm text-theme-muted">
-              <Sparkles className="w-4 h-4 text-synchrony-gold" />
-              <span>Drag to reorder</span>
+        <div className="card-synchrony p-6  min-w-[80vw]">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+              {activeTab} Connections
+              <span className="px-2 py-0.5 bg-theme-accent text-synchrony-gold text-xs font-semibold rounded-full border border-synchrony-gold">
+                {currentConnections.length}
+              </span>
+            </h2>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-theme-muted">
+              <Sparkles className="w-3 h-3 text-synchrony-gold" />
+              <span className="text-black dark:text-white">
+                Drag to reorder
+              </span>
             </div>
           </div>
 
@@ -266,36 +233,32 @@ function App() {
             onReorder={reorderConnections}
           />
         </div>
-
-        {/* Add Connection Modal */}
-        <AddConnectionModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          onSave={addConnection}
-        />
-
-        {/* Edit Connection Modal */}
-        <EditConnectionModal
-          isOpen={isEditModalOpen}
-          connection={editingConnection}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingConnection(null);
-          }}
-          onSave={handleSaveEdit}
-        />
-
-        {/* Password Update Modal */}
-        <PasswordUpdateModal
-          isOpen={isPasswordModalOpen}
-          connection={updatingPasswordConnection}
-          onClose={() => {
-            setIsPasswordModalOpen(false);
-            setUpdatingPasswordConnection(null);
-          }}
-          onUpdate={handlePasswordUpdate}
-        />
       </div>
+
+      {/* Modals */}
+      <AddConnectionModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={addConnection}
+      />
+      <EditConnectionModal
+        isOpen={isEditModalOpen}
+        connection={editingConnection}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingConnection(null);
+        }}
+        onSave={handleSaveEdit}
+      />
+      <PasswordUpdateModal
+        isOpen={isPasswordModalOpen}
+        connection={updatingPasswordConnection}
+        onClose={() => {
+          setIsPasswordModalOpen(false);
+          setUpdatingPasswordConnection(null);
+        }}
+        onUpdate={handlePasswordUpdate}
+      />
     </div>
   );
 }

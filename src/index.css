@@ -260,7 +260,8 @@ body {
 
 /* Gradient backgrounds */
 .gradient-synchrony {
-  background: linear-gradient(135deg, var(--synchrony-gold) 0%, var(--autumn) 50%, var(--teal) 100%);
+  /* background: linear-gradient(135deg, var(--synchrony-gold) 0%, var(--autumn) 50%, var(--teal) 100%); */
+  background:  var(--synchrony-gold);
 }
 
 .gradient-synchrony-subtle {

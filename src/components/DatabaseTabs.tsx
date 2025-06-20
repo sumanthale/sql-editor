@@ -40,20 +40,20 @@ export const DatabaseTabs: React.FC<DatabaseTabsProps> = ({
             key={type}
             onClick={() => onTabChange(type)}
             className={`
-              flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium text-sm transition-synchrony min-w-0 flex-1
+              flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-medium text-xs transition-all duration-150 min-w-0 flex-1
               ${isActive
-                ? 'bg-synchrony-gold text-charcoal shadow-theme-medium transform scale-105'
+                ? 'bg-synchrony-gold text-charcoal shadow-theme-medium scale-[1.03]'
                 : 'text-theme-secondary hover:bg-theme-tertiary hover:text-theme-primary'}
             `}
           >
-            <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-charcoal' : tabConfig[type].color}`} />
+            <Icon className={`w-3 h-3 ${isActive ? 'text-charcoal' : tabConfig[type].color}`} />
             <span className="truncate">{type}</span>
             {count > 0 && (
               <span
                 className={`
-                  inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full
-                  ${isActive 
-                    ? 'bg-charcoal text-synchrony-gold' 
+                   w-3 h-3 text-[9px] font-bold rounded-full flex items-center justify-center
+                  ${isActive
+                    ? 'bg-charcoal text-synchrony-gold'
                     : 'bg-theme-accent text-synchrony-gold border border-synchrony-gold'}
                 `}
               >

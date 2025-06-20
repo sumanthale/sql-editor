@@ -22,45 +22,39 @@ interface ConnectionCardProps {
 const environmentConfig = {
   dev: {
     icon: "🔧",
-    badge: "badge-dev",
-    border: "border-dark-green",
-    bg: "bg-theme-accent",
-    name: "Development"
+    badge: "bg-green-600",
+    border: "border-green-600",
+    bg: "bg-green-50",
+    name: "Development",
   },
   qa: {
     icon: "🧪",
-    badge: "badge-qa",
-    border: "border-teal",
-    bg: "bg-theme-accent",
-    name: "QA"
+    badge: "bg-blue-600",
+    border: "border-blue-500",
+    bg: "bg-blue-50",
+    name: "QA",
   },
   staging: {
     icon: "🎭",
-    badge: "badge-staging",
-    border: "border-autumn",
-    bg: "bg-theme-accent",
-    name: "Staging"
+    badge: "bg-yellow-600",
+    border: "border-yellow-600",
+    bg: "bg-yellow-50",
+    name: "Staging",
   },
   uat: {
     icon: "👥",
-    badge: "badge-uat",
-    border: "border-turquoise",
-    bg: "bg-theme-accent",
-    name: "UAT"
+    badge: "bg-purple-600",
+    border: "border-purple-600",
+    bg: "bg-purple-50",
+    name: "UAT",
   },
   prod: {
     icon: "🚀",
-    badge: "badge-prod",
-    border: "border-brick",
-    bg: "bg-theme-accent",
-    name: "Production"
+    badge: "bg-red-600",
+    border: "border-red-600",
+    bg: "bg-red-50",
+    name: "Production",
   },
-};
-
-const databaseTypeConfig = {
-  PostgreSQL: "db-postgresql",
-  MySQL: "db-mysql",
-  Oracle: "db-oracle",
 };
 
 export const ConnectionCard: React.FC<ConnectionCardProps> = ({
@@ -98,28 +92,26 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
         ref={setNodeRef}
         style={style}
         className={`
-          group relative card-synchrony p-5 transition-synchrony
-          ${isDragging ? "opacity-60 scale-105 shadow-theme-heavy" : "hover:shadow-theme-medium hover:scale-[1.02]"}
-          ${envConfig.bg} border-l-4 ${envConfig.border}
-        `}
+    group relative p-4 transition-synchrony rounded-lg
+    ${
+      isDragging
+        ? "opacity-60 scale-105 shadow-theme-heavy"
+        : "hover:shadow-theme-medium hover:scale-[1.02]"
+    }
+    border-l-4 ${envConfig.border} ${envConfig.bg}
+
+  `}
       >
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="gradient-synchrony p-2 rounded-lg shadow-theme-light">
-              <Database className="w-4 h-4 text-charcoal" />
-            </div>
             <div>
               <h3 className="text-sm font-semibold text-theme-primary truncate">
                 {connection.connectionName}
               </h3>
-              <span className={`text-xs font-medium ${databaseTypeConfig[connection.type]}`}>
-                {connection.type}
-              </span>
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <div
               {...attributes}
@@ -159,12 +151,14 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
             <User className="w-4 h-4 text-theme-muted" />
             <span className="truncate font-medium">{connection.username}</span>
           </div>
+
           <div className="flex items-center gap-2 text-theme-secondary">
             <Network className="w-4 h-4 text-theme-muted" />
             <span className="truncate">
               {connection.host}:{connection.port}
             </span>
           </div>
+
           {connection.databaseName && (
             <div className="flex items-center gap-2 text-theme-secondary">
               <Database className="w-4 h-4 text-theme-muted" />
@@ -174,19 +168,21 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
         </div>
 
         {/* Environment Badge */}
-        <div className="mt-4 pt-3 border-t border-theme-light">
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white ${envConfig.badge}`}>
-            <span className="mr-1">{envConfig.icon}</span>
-            {envConfig.name}
-          </span>
-        </div>
+
+        <span
+          className={`inline-flex items-center  px-2 py-[1px] rounded-md text-[10px] font-bold z-50
+            tracking-wider
+            text-theme-primary bg-theme-tertiary uppercase absolute  right-3 bottom-3 border ${envConfig.border} ${envConfig.bg}`}
+        >
+          {envConfig.name}
+        </span>
 
         {/* Last Used */}
-        {connection.lastUsed && (
+        {/* {connection.lastUsed && (
           <div className="mt-2 text-xs text-theme-muted">
             Last used: {new Date(connection.lastUsed).toLocaleDateString()}
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Confirm Modal */}
@@ -194,7 +190,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop px-4">
           <div className="card-synchrony max-w-sm w-full p-6 relative animate-fade-in">
             <div className="flex items-center gap-3 mb-4">
-              <div className="bg-brick bg-opacity-10 p-2 rounded-full">
+              <div className=" bg-opacity-10 p-2 rounded-full">
                 <Trash2 className="w-5 h-5 text-brick" />
               </div>
               <h2 className="text-lg font-semibold text-theme-primary">
@@ -203,7 +199,10 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
             </div>
             <p className="text-sm text-theme-secondary mb-6">
               Are you sure you want to delete{" "}
-              <strong className="text-theme-primary">{connection.connectionName}</strong>?<br />
+              <strong className="text-theme-primary">
+                {connection.connectionName}
+              </strong>
+              ?<br />
               This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
